@@ -1,4 +1,8 @@
-import { BlockServices, BlockWithServices } from "./WorkspaceContext"
+import {
+    BlockServices,
+    BlockWithServices,
+    DATA_CHANGE,
+} from "./WorkspaceContext"
 import { Block } from "blockly"
 import { useCallback, useEffect } from "react"
 import useChangeThrottled from "../../jacdac/useChangeThrottled"
@@ -10,10 +14,16 @@ export default function useBlockData<T = object>(
 ) {
     const services = (block as unknown as BlockWithServices)?.jacdacServices
     // data on the current node
-    const data = useChangeThrottled<BlockServices, T[]>(services, _ => _?.data)
+    const data = useChangeThrottled<BlockServices, T[]>(
+        services,
+        _ => _?.data as unknown as T[],
+        200,
+        DATA_CHANGE
+    )
     const setData = useCallback(
         (value: T[]) => {
-            if (services) services.data = value
+            // eslint-disable-next-line @typescript-eslint/ban-types
+            if (services) services.data = value as unknown as object[]
         },
         [services]
     )
@@ -25,7 +35,8 @@ export default function useBlockData<T = object>(
             initialValue !== undefined &&
             services.data === undefined
         )
-            services.data = initialValue
+            // eslint-disable-next-line @typescript-eslint/ban-types
+            services.data = initialValue as unknown as object[]
     }, [services])
 
     return { data, setData }

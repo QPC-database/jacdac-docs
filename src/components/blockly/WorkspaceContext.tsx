@@ -65,19 +65,37 @@ export interface FieldWithServices {
     notifyServicesChanged?: () => void
 }
 
+export const DATA_CHANGE = "dataChange"
+export const CHART_CHANGE = "chartChange"
+
 export class BlockServices extends JDEventSource {
     private _data: object[]
+    private _indeterminate?: boolean = false
     private _chartProps: object
+
+    get indeterminate() { 
+        return !!this._indeterminate
+    }
+
+    set indeterminate(value: boolean) {
+        if (!!this._indeterminate !== !!value) {
+            this._indeterminate = !!value
+            this.emit(CHANGE)
+        }
+    }
 
     get data() {
         return this._data
     }
+
     set data(value: object[]) {
         if (JSON.stringify(this._data) !== JSON.stringify(value)) {
             this._data = value
+            this.emit(DATA_CHANGE)
             this.emit(CHANGE)
         }
     }
+
     clearData() {
         this.data = undefined
     }
@@ -88,6 +106,7 @@ export class BlockServices extends JDEventSource {
     set chartProps(value: object) {
         if (this._chartProps !== value) {
             this._chartProps = value
+            this.emit(CHART_CHANGE)
             this.emit(CHANGE)
         }
     }

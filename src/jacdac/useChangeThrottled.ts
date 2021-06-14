@@ -8,8 +8,10 @@ export default function useChangeThrottled<TNode extends IEventSource, TValue>(
     node: TNode,
     query?: (n: TNode) => TValue,
     time?: number,
+    eventName?: string,
     deps?: React.DependencyList
 ): TValue {
+    const ev = eventName || CHANGE
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [version, setVersion] = useState(node?.changeId || 0)
     const value = query ? query(node) : undefined
@@ -19,8 +21,8 @@ export default function useChangeThrottled<TNode extends IEventSource, TValue>(
     )
 
     useEffect(
-        () => node?.subscribe(CHANGE, () => throttledSetVersion(node.changeId)),
-        [node, ...(deps || [])]
+        () => node?.subscribe(ev, () => throttledSetVersion(node.changeId)),
+        [node, ev, ...(deps || [])]
     )
 
     return value

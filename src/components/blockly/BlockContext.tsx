@@ -19,6 +19,7 @@ import {
     BlocklyWorkspaceWithServices,
     BlockServices,
     BlockWithServices,
+    DATA_CHANGE,
     FieldWithServices,
     WorkspaceServices,
 } from "./WorkspaceContext"
@@ -96,7 +97,7 @@ export function BlockProvider(props: {
         // register data transforms
         const { transformData } = resolveBlockDefinition(block.type) || {}
         if (transformData) {
-            services.on(CHANGE, async () => {
+            services.on(DATA_CHANGE, async () => {
                 if (!block.isEnabled()) return
 
                 const next = (block.nextConnection?.targetBlock() ||
