@@ -110,7 +110,7 @@ export interface WorkspaceContextProps {
     services: WorkspaceServices
     flyout?: boolean
     role?: string
-    roleServiceShortId?: string
+    roleServiceClass?: number
     roleService?: JDService
     runner?: VMProgramRunner
 }
@@ -124,7 +124,7 @@ export const WorkspaceContext = createContext<WorkspaceContextProps>({
     sourceId: undefined,
     services: undefined,
     role: undefined,
-    roleServiceShortId: undefined,
+    roleServiceClass: undefined,
     roleService: undefined,
     runner: undefined,
 })
@@ -164,7 +164,7 @@ export function WorkspaceProvider(props: {
         return undefined
     }
     const resolveRoleService = () => {
-        const newRoleService = role && roleManager?.getService(role)
+        const newRoleService = role && roleManager?.getRoleService(role)
         return newRoleService
     }
 
@@ -172,9 +172,9 @@ export function WorkspaceProvider(props: {
     const [roleService, setRoleService] = useState<JDService>(
         resolveRoleService()
     )
-    const roleServiceShortId = useChange(
+    const roleServiceClass = useChange(
         roleManager,
-        _ => _?.roles.find(r => r.role === role)?.serviceShortId
+        _ => _?.roles.find(r => r.role === role)?.serviceClass
     )
     const [flyout, setFlyout] = useState(!!sourceBlock?.isInFlyout)
 
@@ -220,7 +220,7 @@ export function WorkspaceProvider(props: {
                 sourceId,
                 services,
                 role,
-                roleServiceShortId,
+                roleServiceClass,
                 roleService,
                 runner,
                 flyout,

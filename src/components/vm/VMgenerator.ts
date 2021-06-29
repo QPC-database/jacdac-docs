@@ -15,6 +15,7 @@ import {
 } from "../blockly/toolbox"
 import Blockly from "blockly"
 import BlockDomainSpecificLanguage, { resolveDsl } from "../blockly/dsl/dsl"
+import { serviceSpecificationFromName } from "../../../jacdac-ts/src/jdom/spec"
 
 export interface ExpressionWithErrors {
     expr: jsep.Expression
@@ -53,7 +54,11 @@ export default function workspaceJSONToVMProgram(
 
     const roles: VMRole[] = workspace.variables
         .filter(v => BUILTIN_TYPES.indexOf(v.type) < 0)
-        .map(v => ({ role: v.name, serviceShortId: v.type }))
+        .map(v => ({
+            role: v.name,
+            serviceClass: serviceSpecificationFromName(v.type)?.classIdentifier,
+        }))
+        .filter(({ serviceClass }) => serviceClass !== undefined)
 
     class EmptyExpression extends Error {}
 
